@@ -19,7 +19,7 @@ def configure_logging(debug: bool = False) -> None:
                 fmt=(
                     "{asctime} "
                     "\033[33m{levelname:<5}\033[0m "
-                    "\033[32m{name}:{funcName}:{line}\033[0m "
+                    "\033[32m{name}:{funcName}:{lineno}\033[0m "
                     "\033[2m{message}\033[0m"
                 ),
                 style="{",

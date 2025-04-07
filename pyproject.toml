@@ -25,6 +25,9 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["src/"]
 
+[project.scripts]
+sllm = "sllm.app:main"
+
 [tool.ruff]
 line-length = 80
 
