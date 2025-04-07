@@ -64,7 +64,9 @@ def started() -> bool:
         logger.debug("Container is not running.")
         return False
 
-    status: str = json.loads(proc.stdout)[0].get("State", {}).get("Status", "unknown")
+    status: str = (
+        json.loads(proc.stdout)[0].get("State", {}).get("Status", "unknown")
+    )
     if status != "running":
         logger.debug(f"Container is running in unexpected state of '{status}'.")
         return False
