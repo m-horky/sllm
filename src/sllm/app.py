@@ -107,9 +107,9 @@ def status() -> None:
 
 def app() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--debug", action="store_true")
     parser.add_argument("--init", action="store_true", help="ensure runtime")
     parser.add_argument("--status", action="store_true", help="runtime status")
+    parser.add_argument("--debug", action="store_true", help="nerd information")
 
     args = parser.parse_args()
     if args.init:
