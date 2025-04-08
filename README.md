@@ -7,7 +7,7 @@ My repository for managing small large language models. Yep.
 Dependencies: `systemd`, `podman`, `ramalama`.
 
 ```shell
-$ pipx install https://github.com/m-horky/sllm.git
+$ pipx install git+https://github.com/m-horky/sllm.git
 ```
 
 ## Setting up
@@ -54,6 +54,11 @@ INFO Rating...
 3. Why: Meh, I do not know.
 WARNING You should use '--amend' to rewrite the message.
 ```
+
+To use this automatically for every commit in your repository:
+
+- Create `.git/hooks/commit-msg` and set it as executable.
+- In it, call `sllm-git-message --file $1`.
 
 ## Using local translation tool
 
