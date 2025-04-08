@@ -28,9 +28,11 @@ def _status_runtime() -> None:
         logger.info("Runtime is not present.")
         return
 
-    logger.info("Runtime is present ({size:.2f} GB).".format(
-        size=image["Size"] / 2**30,
-    ))
+    logger.info(
+        "Runtime is present ({size:.2f} GB).".format(
+            size=image["Size"] / 2**30,
+        )
+    )
 
 
 def _status_model() -> None:
@@ -48,9 +50,11 @@ def _status_model() -> None:
         logger.info("Model is not present.")
         return
 
-    logger.info("Model is present ({size:.2f} GB).".format(
-        size=model["size"] / 2**30,
-    ))
+    logger.info(
+        "Model is present ({size:.2f} GB).".format(
+            size=model["size"] / 2**30,
+        )
+    )
 
 
 def _status_api() -> None:
@@ -126,7 +130,9 @@ def main() -> int:
         app()
         return 0
     except Exception as exc:
-        logger.critical(f"Aborting on unhandled exception {exc.__class__.__name__}.")
+        logger.critical(
+            f"Aborting on unhandled exception {exc.__class__.__name__}."
+        )
         if debug:
             traceback.print_exc()
         else:
