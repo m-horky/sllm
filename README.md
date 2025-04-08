@@ -2,6 +2,8 @@
 
 My repository for managing small large language models. Yep.
 
+![Demo of `sllm-git-message`](demo.gif)
+
 ## Installation
 
 Dependencies: `systemd`, `podman`, `ramalama`.
