@@ -107,8 +107,11 @@ def status() -> None:
 
 def app() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--init", action="store_true", help="ensure runtime")
-    parser.add_argument("--status", action="store_true", help="runtime status")
+    flags = parser.add_mutually_exclusive_group()
+    flags.add_argument("--init", action="store_true", help="ensure runtime")
+    flags.add_argument("--status", action="store_true", help="runtime status")
+    flags.add_argument("--start", action="store_true", help="start the runtime")
+    flags.add_argument("--stop", action="store_true", help="stop the runtime")
     parser.add_argument("--debug", action="store_true", help="nerd information")
 
     args = parser.parse_args()
@@ -117,6 +120,17 @@ def app() -> None:
         return
     if args.status:
         status()
+        return
+    if args.start:
+        sllm.container.ensure_runtime()
+        sllm.container.ensure_started()
+        sllm.container.schedule_shutdown()
+        print(f"Server is present at http://127.0.0.1:{sllm.common.API_PORT}.")
+        return
+    if args.stop:
+        sllm.container._cancel_scheduled_shutdown()
+        if sllm.container.started():
+            sllm.container.shutdown()
         return
 
     parser.print_help()

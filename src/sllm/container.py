@@ -140,3 +140,14 @@ def schedule_shutdown() -> None:
         logger.warning(f"Cannot schedule shutdown: {proc.stderr}.")
         return
     logger.debug("Container shutdown has been scheduled.")
+
+
+def shutdown() -> None:
+    """Shut down the container."""
+    cmd = ["podman", "stop", NAME]
+
+    proc = subprocess.run(cmd, text=True, capture_output=True)
+    if proc.returncode > 0:
+        logger.warning(f"Container cannot be shut down: {proc.stderr}.")
+        return
+    logger.debug("Container has been shut down.")

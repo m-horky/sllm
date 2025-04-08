@@ -14,12 +14,14 @@ $ pipx install git+https://github.com/m-horky/sllm.git
 
 ```shell
 $ sllm
-usage: sllm [-h] [--debug] [--init] [--status]
+usage: sllm [-h] [--init | --status | --start | --stop] [--debug]
 
 options:
   -h, --help  show this help message and exit
   --init      ensure runtime
   --status    runtime status
+  --start     start the runtime
+  --stop      stop the runtime
   --debug     nerd information
 ```
 
