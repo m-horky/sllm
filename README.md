@@ -21,7 +21,13 @@ options:
   --debug
   --init      ensure runtime
   --status    runtime status
+```
+
+```shell
 $ sllm --init
+```
+
+```shell
 $ sllm --status
 INFO Runtime is present (1.03 GB).
 INFO Model is present (1.88 GB).
