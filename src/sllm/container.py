@@ -91,8 +91,6 @@ def start() -> None:
     :raises RuntimeError:
     """
     cmd = ["ramalama", "serve"]
-    # Use CPU
-    cmd += ["--ngl", "0"]
     # Decrease context size
     cmd += ["--ctx-size", "2048"]
     # Do not download if not necessary
