@@ -73,10 +73,10 @@ def communicate_response(review: str) -> bool:
 
 def app() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--debug", action="store_true")
     flags = parser.add_mutually_exclusive_group()
-    flags.add_argument("--ref", help="commit", type=str)
-    flags.add_argument("--file", help="file", type=pathlib.Path)
+    flags.add_argument("--ref", help="load from commit", type=str)
+    flags.add_argument("--file", help="load from file", type=pathlib.Path)
+    parser.add_argument("--debug", action="store_true", help="nerd information")
 
     args = parser.parse_args()
 
