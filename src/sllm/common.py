@@ -1,8 +1,18 @@
 import logging
+import os
 import sys
 
 API_PORT: int = 6574
 API_URL: str = f"http://127.0.0.1:{API_PORT}"
+
+
+def use_color() -> bool:
+    """Determine if stdout/stderr support colors."""
+    if not sys.stdout.isatty():
+        return False
+    if os.getenv("NO_COLOR", None) is not None:
+        return False
+    return True
 
 
 def configure_logging(debug: bool = False) -> None:
@@ -10,30 +20,29 @@ def configure_logging(debug: bool = False) -> None:
     urllib_logger.setLevel(logging.ERROR)
 
     root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
+
+    handler = logging.StreamHandler(stream=sys.stderr)
 
     if debug:
-        root_logger.setLevel(logging.DEBUG)
-        handler = logging.StreamHandler(stream=sys.stderr)
-        handler.setFormatter(
-            logging.Formatter(
-                fmt=(
-                    "{asctime} "
-                    "\033[33m{levelname:<5}\033[0m "
-                    "\033[32m{name}:{funcName}:{lineno}\033[0m "
-                    "\033[2m{message}\033[0m"
-                ),
-                style="{",
-                datefmt="%Y-%m-%d %H:%M:%S",
+        if use_color():
+            fmt = (
+                "{asctime} "
+                "\033[33m{levelname:<5}\033[0m "
+                "\033[32m{name}:{funcName}:{lineno}\033[0m "
+                "\033[2m{message}\033[0m"
             )
-        )
-        root_logger.addHandler(handler)
+        else:
+            fmt = (
+                "{asctime} {levelname:<5} {name}:{funcName}:{lineno} {message}"
+            )
     else:
-        root_logger.setLevel(logging.INFO)
-        handler = logging.StreamHandler(stream=sys.stderr)
-        handler.setFormatter(
-            logging.Formatter(
-                fmt=("\033[33m{levelname}\033[0m \033[2m{message}\033[0m"),
-                style="{",
-            )
-        )
-        root_logger.addHandler(handler)
+        if use_color():
+            fmt = "\033[33m{levelname}\033[0m \033[2m{message}\033[0m"
+        else:
+            fmt = "{levelname} {message}"
+
+    handler.setFormatter(
+        logging.Formatter(fmt=fmt, style="{", datefmt="%Y-%m-%d %H:%M:%S")
+    )
+    root_logger.addHandler(handler)

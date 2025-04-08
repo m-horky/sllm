@@ -49,9 +49,9 @@ def communicate_request(message: str) -> None:
     """Formats the commit message and prints it."""
     # TODO Wrap long lines
     for line in message.split("\n"):
-        print("| \033[3m", end="")
+        print("| \033[3m" if sllm.common.use_color() else "| ", end="")
         print(line, end="")
-        print("\033[0m", end="\n")
+        print("\033[0m" if sllm.common.use_color() else "", end="\n")
 
 
 def communicate_response(review: str) -> bool:
@@ -64,9 +64,10 @@ def communicate_response(review: str) -> bool:
         return "meh" not in text.lower()
 
     for line in review.split("\n"):
-        print("\033[32m" if is_ok(line) else "\033[31m", end="")
+        if sllm.common.use_color():
+            print("\033[32m" if is_ok(line) else "\033[31m", end="")
         print(line, end="")
-        print("\033[0m", end="\n")
+        print("\033[0m" if sllm.common.use_color() else "", end="\n")
 
     return is_ok(review)
 

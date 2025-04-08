@@ -42,13 +42,17 @@ def read_from_editor() -> str:
 
 def communicate_request(message: str) -> None:
     """Formats the commit message and prints it."""
+    if not sys.stdout.isatty():
+        logger.debug("Not in interactive console, omitting input.")
+        return
+
     for long_line in message.split("\n"):
         for line in textwrap.wrap(
             long_line, width=os.get_terminal_size().columns - 3
         ):
-            print("| \033[3m", end="")
+            print("| \033[3m" if sllm.common.use_color() else "| ", end="")
             print(line, end="")
-            print("\033[0m", end="\n")
+            print("\033[0m" if sllm.common.use_color() else "", end="\n")
 
 
 def app() -> None:
