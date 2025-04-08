@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sllm"
-version = "2025.04.07"
+version = "2025.04.08"
 authors = [
 	{email = "mhorky@redhat.com"}
 ]
