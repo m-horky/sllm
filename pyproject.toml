@@ -27,6 +27,10 @@ where = ["src/"]
 
 [project.scripts]
 sllm = "sllm.app:main"
+sllm-git-message = "_sllm_git_message:main"
+
+[tool.setuptools.package-data]
+"_sllm_git_message" = ["prompt.txt"]
 
 [tool.ruff]
 line-length = 80
