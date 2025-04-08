@@ -18,9 +18,9 @@ usage: sllm [-h] [--debug] [--init] [--status]
 
 options:
   -h, --help  show this help message and exit
-  --debug
   --init      ensure runtime
   --status    runtime status
+  --debug     nerd information
 ```
 
 ```shell
