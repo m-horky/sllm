@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 import time
 import json
@@ -39,7 +40,6 @@ def ensure_started() -> None:
     :raises TimeoutError: Server did not start fast enough.
     """
     if started():
-        logger.debug("Server is already running.")
         return
 
     start()
@@ -120,19 +120,21 @@ def _cancel_scheduled_shutdown() -> None:
     # Non-zero exit code means there was no timer scheduled.
 
 
-def schedule_shutdown(interval: str) -> None:
+def _get_scheduled_shutdown_interval() -> str:
+    return os.getenv("SLLM_SHUTDOWN_INTERVAL", "15m")
+
+
+def schedule_shutdown() -> None:
     """Schedule the container to shut down.
 
     Sets a systemd timer to stop the container. Consecutive execution
     will cancel the previous timer and set up a new one.
-
-    :param interval: systemd-compatible interval.
     """
     _cancel_scheduled_shutdown()
 
     cmd = ["systemd-run", "--user"]
     cmd += ["--unit", SHUTDOWN_NAME]
-    cmd += ["--on-active", interval]
+    cmd += ["--on-active", _get_scheduled_shutdown_interval()]
     cmd += ["podman", "stop", NAME]
 
     proc = subprocess.run(cmd, text=True, capture_output=True)
