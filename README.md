@@ -27,6 +27,10 @@ options:
   --debug     nerd information
 ```
 
+The default model is `ollama://llama3.2:3b`, which is able to run reasonably well on a CPU.
+You can overwrite it by setting `SLLM_MODEL=` environment variable.
+You can find a variety of models [here](https://ollama.com/search).
+
 ```shell
 $ sllm --init
 ```
