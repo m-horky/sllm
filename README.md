@@ -95,6 +95,14 @@ INFO Translating...
 I need advice on how to enable the program in SELinux
 ```
 
+## Configuration
+
+Configuration is done through environment variables. Set them in your `.profile`.
+
+- `SLLM_MODEL`: LLM to use. Defaults to `ollama://llama3.2:3b`.
+- `SLLM_RAMALAMA`: ramalama [image](https://quay.io/repository/ramalama/ramalama?tab=tags&tag=latest) to use.
+- `SLLM_SHUTDOWN_INTERVAL`: Timeout after which ramalama should shut down itself.
+
 ## Why
 
 **Why do anything?**
