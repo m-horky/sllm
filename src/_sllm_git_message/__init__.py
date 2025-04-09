@@ -38,7 +38,9 @@ def read_from_ref(reference: str) -> str:
 
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.error(f"Got {proc.returncode} from 'git show': {proc.stderr}.")
+        logger.error(
+            f"Got {proc.returncode} from 'git show': {proc.stderr.strip()}"
+        )
         raise RuntimeError("Could not read reference.")
 
     # Clean up trailing lines

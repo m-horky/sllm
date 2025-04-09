@@ -17,7 +17,7 @@ def _status_runtime() -> None:
     cmd = ["podman", "image", "ls", "--format", "json"]
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.error(f"Cannot query for runtime: {proc.stderr}.")
+        logger.error(f"Cannot query for runtime: {proc.stderr.strip()}")
         return
 
     images: list[dict] = json.loads(proc.stdout)
@@ -39,7 +39,7 @@ def _status_model() -> None:
     cmd = ["ramalama", "ls", "--json"]
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.error(f"Cannot query for models: {proc.stderr}.")
+        logger.error(f"Cannot query for models: {proc.stderr.strip()}")
         return
 
     models: list[dict] = json.loads(proc.stdout)
@@ -61,7 +61,7 @@ def _status_api() -> None:
     cmd = ["ramalama", "ps", "--format", "json"]
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.error(f"Cannot query for API: {proc.stderr}.")
+        logger.error(f"Cannot query for API: {proc.stderr.strip()}")
         return
 
     models: list[dict] = json.loads(proc.stdout)
@@ -79,7 +79,7 @@ def _status_shutdown() -> None:
     cmd = ["systemctl", "--user", "list-timers", "--output", "json"]
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.error(f"Cannot query for timers: {proc.stderr}.")
+        logger.error(f"Cannot query for timers: {proc.stderr.strip()}")
         return
 
     timers: list[dict] = json.loads(proc.stdout)

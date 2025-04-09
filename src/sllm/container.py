@@ -106,7 +106,7 @@ def start() -> None:
     logger.info("Starting the container.")
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.debug(f"Command {cmd} failed: {proc.stderr}.")
+        logger.debug(f"Command {cmd} failed: {proc.stderr.strip()}")
         raise RuntimeError("Server could not be started.")
 
 
@@ -139,7 +139,7 @@ def schedule_shutdown() -> None:
 
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.warning(f"Cannot schedule shutdown: {proc.stderr}.")
+        logger.warning(f"Cannot schedule shutdown: {proc.stderr.strip()}")
         return
     logger.debug("Container shutdown has been scheduled.")
 
@@ -150,6 +150,6 @@ def shutdown() -> None:
 
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.warning(f"Container cannot be shut down: {proc.stderr}.")
+        logger.warning(f"Container cannot be shut down: {proc.stderr.strip()}")
         return
     logger.debug("Container has been shut down.")
