@@ -55,17 +55,21 @@ class Request:
             ],
         }
 
-    def send(self) -> dict:
+    def send(self, *, timeout: int = 120) -> dict:
         """Request an answer from the LLM.
 
         Expects ramalama to be serving OpenAPI-compatible API on
         localhost on a well-known port.
+
+        :param timeout: REST call timeout, in seconds.
         """
         logger.debug("Sending API request.")
 
         req: requests.Response = requests.post(
             f"{sllm.common.API_URL}/v1/chat/completions",
             json=self._build(),
+            # connection timeout can be very low, we're on localhost
+            timeout=(0.5, timeout),
         )
         response: dict = req.json()
 

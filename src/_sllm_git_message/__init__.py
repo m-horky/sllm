@@ -113,7 +113,11 @@ def app() -> None:
         example_input_header="[Instruction]",
         example_response_header="[Review]",
     )
-    response: dict = request.send()
+    try:
+        response: dict = request.send()
+    except TimeoutError:
+        logger.error("Model did not respond in time.")
+        raise
     review: str = response["choices"][0]["message"]["content"].strip()
     ok: bool = communicate_response(review)
     if not ok:
@@ -135,5 +139,5 @@ def main() -> int:
         if debug:
             traceback.print_exc()
         else:
-            print(exc)
+            print(exc.__class__.__name__, exc)
         return 1
