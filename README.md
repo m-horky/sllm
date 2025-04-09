@@ -103,6 +103,12 @@ From time to time, I need to translate text that cannot be put into Google Trans
 
 It is a word that LLMs do not usually emit. During development, this made it very simple to determine whether the output is good or not, and it stuck.
 
+**Aren't you boiling the oceans by this?**
+
+There's been a lot of debate online against LLMs in general. One of the arguments against them is that they require a lot of power to operate, and all that compute heat is boiling the oceans.
+
+Well, good news. This is running locally, you are boiling your own bathtub at most. Plus, if you own a gaming computer, have you tried looking at its power consumption. You can afford to run a LLM for a few dozen queries a day, it's not as bad as it might seem.
+
 ## License
 
 MIT
