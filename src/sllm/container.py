@@ -13,8 +13,8 @@ MODEL: str = os.getenv("SLLM_MODEL", "ollama://llama3.2:3b")
 # Pinning to 0.7.2 temporarily, see https://github.com/m-horky/sllm/issues/7
 RUNTIME: str = os.getenv("SLLM_RAMALAMA", "quay.io/ramalama/ramalama:0.7.2")
 NAME: str = "sllm"
-SHUTDOWN_INTERVAL: str = "10m"
 SHUTDOWN_NAME: str = "sllm-shutdown"
+SHUTDOWN_INTERVAL: str = os.getenv("SLLM_SHUTDOWN_INTERVAL", "15m")
 
 logger = logging.getLogger(__name__)
 
@@ -120,10 +120,6 @@ def _cancel_scheduled_shutdown() -> None:
     # Non-zero exit code means there was no timer scheduled.
 
 
-def _get_scheduled_shutdown_interval() -> str:
-    return os.getenv("SLLM_SHUTDOWN_INTERVAL", "15m")
-
-
 def schedule_shutdown() -> None:
     """Schedule the container to shut down.
 
@@ -134,7 +130,7 @@ def schedule_shutdown() -> None:
 
     cmd = ["systemd-run", "--user"]
     cmd += ["--unit", SHUTDOWN_NAME]
-    cmd += ["--on-active", _get_scheduled_shutdown_interval()]
+    cmd += ["--on-active", SHUTDOWN_INTERVAL]
     cmd += ["podman", "stop", NAME]
 
     proc = subprocess.run(cmd, text=True, capture_output=True)
