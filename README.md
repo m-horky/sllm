@@ -47,6 +47,8 @@ By default, the model shuts itself down after 15 minutes to save resources. You 
 
 ## Using the git commit message review tool
 
+Dependencies: `git`.
+
 ```shell
 $ sllm-git-message --help 
 usage: sllm-git-message [-h] [--ref REF | --file FILE] [--debug]
@@ -111,15 +113,15 @@ I believe that there are use-cases for locally running models. I wanted to explo
 
 From time to time, I need to translate text that cannot be put into Google Translate, and a locally running model is perfect for that. I don't need the exact precise translation, all I need is to understand the technical problem the other party is describing.
 
-**Why 'Meh'?**
+**Why does `sllm-git-message` respond with 'Meh'?**
 
 It is a word that LLMs do not usually emit. During development, this made it very simple to determine whether the output is good or not, and it stuck.
 
 **Aren't you boiling the oceans by this?**
 
-There's been a lot of debate online against LLMs in general. One of the arguments against them is that they require a lot of power to operate, and all that compute heat is boiling the oceans.
+There's been a lot of debate online against LLMs in general. One of the arguments against them is that they require a lot of power to operate, and all that compute heat is boiling the oceans through climate change.
 
-Well, good news. This is running locally, you are boiling your own bathtub at most. Plus, if you own a gaming computer, have you tried looking at its power consumption. You can afford to run a LLM for a few dozen queries a day, it's not as bad as it might seem.
+Well. This is running locally, you are boiling your own bathtub at most. Have you tried looking at the power consumption of the nearest gaming computer? You can afford to run a LLM for a few dozen queries a day, it's not as bad as it might seem.
 
 ## License
 
