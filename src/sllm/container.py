@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def ensure_runtime() -> None:
     """Download the ramalama runtime and the model.
 
-    :raises RuntimeError:
+    :raises RuntimeError: 'ramalama pull' failed.
     """
     logger.debug(f"Downloading '{MODEL}'.")
 

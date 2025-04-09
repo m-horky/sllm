@@ -8,6 +8,48 @@ import sllm.common
 logger = logging.getLogger(__name__)
 
 
+def ok() -> bool:
+    """Send a healthcheck.
+
+    Models can go crazy when their runtime misconfigures them.
+    This should be good enough indicator to determine whether the
+    model is good or not.
+
+    :returns: True if the model is able to respond.
+    """
+    logger.debug("Sending health/sanity check request.")
+
+    try:
+        req: requests.Response = requests.post(
+            f"{sllm.common.API_URL}/v1/chat/completions",
+            json={
+                "temperature": 0.0,
+                "stream": False,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Reply with the string 'pong'.",
+                    }
+                ],
+            },
+            timeout=(0.5, 5),
+        )
+    except requests.exceptions.Timeout:
+        logger.error("Model didn't respond on time.")
+        return False
+
+    response: dict = req.json()
+    pong: str = response["choices"][0]["message"]["content"].strip()
+    if pong != "pong":
+        logger.error(
+            f"Model didn't respond properly: wanted 'pong', got '{pong}'."
+        )
+        return False
+
+    logger.debug("Model seems to be sane and healthy.")
+    return True
+
+
 class Request:
     def __init__(
         self,
@@ -62,15 +104,28 @@ class Request:
         localhost on a well-known port.
 
         :param timeout: REST call timeout, in seconds.
+        :raises TimeoutError: Model works fine, but response timed out.
+        :raises RuntimeError: Model is malfunctioning.
         """
         logger.debug("Sending API request.")
 
-        req: requests.Response = requests.post(
-            f"{sllm.common.API_URL}/v1/chat/completions",
-            json=self._build(),
-            # connection timeout can be very low, we're on localhost
-            timeout=(0.5, timeout),
-        )
+        if not ok():
+            raise RuntimeError(
+                "Model is malfunctioning. "
+                "Run again with '--debug', or execute 'ramalama' yourself to investigate."
+            )
+
+        try:
+            req: requests.Response = requests.post(
+                f"{sllm.common.API_URL}/v1/chat/completions",
+                json=self._build(),
+                # connection timeout can be very low, we're on localhost
+                timeout=(0.5, timeout),
+            )
+        except requests.exceptions.Timeout:
+            logger.debug("Model timed out.")
+            raise TimeoutError("Model didn't respond on time.")
+
         response: dict = req.json()
 
         logger.debug(

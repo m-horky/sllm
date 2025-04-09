@@ -95,11 +95,8 @@ def app() -> None:
         example_input_header="[Original]",
         example_response_header="[Translation]",
     )
-    try:
-        response: dict = request.send()
-    except TimeoutError:
-        logger.error("Model did not respond in time.")
-        raise
+    response: dict = request.send()
+
     translation: str = response["choices"][0]["message"]["content"].strip()
     print(translation)
 
