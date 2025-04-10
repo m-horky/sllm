@@ -29,10 +29,12 @@ where = ["src/"]
 sllm = "sllm.app:main"
 sllm-git-message = "_sllm_git_message:main"
 sllm-translate = "_sllm_translate:main"
+sllm-code = "_sllm_code:main"
 
 [tool.setuptools.package-data]
 "_sllm_git_message" = ["prompt.txt"]
 "_sllm_translate" = ["prompt.txt"]
+"_sllm_code" = ["implement.prompt"]
 
 [tool.ruff]
 line-length = 80
