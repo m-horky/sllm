@@ -6,7 +6,7 @@ If you don't know, say "Meh, I do not know."
 Be creative when looking for answers. I have more information than you do.
 
 For each commit message, summarize the content in three different requirements:
-1. Title: Does the title math the rest of the message?
+1. Title: Does the title match the rest of the message?
 2. What: In one sentence, summarize what is being addressed, changed, added or improved. If you do not know, say "Meh, I do not know."
 3. Why: In one sentence, summarize why it is being changed, or what would be the implication of not changing it. If you do not know, say "Meh, I do not know."
 
