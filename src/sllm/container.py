@@ -10,8 +10,7 @@ import sllm.common
 
 
 MODEL: str = os.getenv("SLLM_MODEL", "ollama://llama3.2:3b")
-# Pinning to 0.7.2 temporarily, see https://github.com/m-horky/sllm/issues/7
-RUNTIME: str = os.getenv("SLLM_RAMALAMA", "quay.io/ramalama/ramalama:0.7.2")
+RUNTIME: str = os.getenv("SLLM_RAMALAMA", "")
 NAME: str = "sllm"
 SHUTDOWN_NAME: str = "sllm-shutdown"
 SHUTDOWN_INTERVAL: str = os.getenv("SLLM_SHUTDOWN_INTERVAL", "15m")
@@ -26,7 +25,11 @@ def ensure_runtime() -> None:
     """
     logger.debug(f"Downloading '{MODEL}'.")
 
-    cmd = ["ramalama", "--image", RUNTIME, "pull", MODEL]
+    cmd = ["ramalama"]
+    if RUNTIME:
+        logger.debug(f"Using custom ramalama image {RUNTIME}.")
+        cmd += ["--image", RUNTIME]
+    cmd += ["pull", MODEL]
     proc = subprocess.run(cmd, text=True, capture_output=False)
     if proc.returncode > 0:
         logger.critical(f"'ramalama pull' returned {proc.returncode}.")
@@ -92,7 +95,10 @@ def start() -> None:
 
     :raises RuntimeError:
     """
-    cmd = ["ramalama", "--image", RUNTIME, "serve"]
+    cmd = ["ramalama"]
+    if RUNTIME:
+        cmd += ["--image", RUNTIME]
+    cmd += ["serve"]
     # Decrease context size
     cmd += ["--ctx-size", "2048"]
     # Do not download if not necessary
