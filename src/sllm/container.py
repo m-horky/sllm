@@ -9,7 +9,7 @@ import requests
 import sllm.common
 
 
-MODEL: str = os.getenv("SLLM_MODEL", "ollama://llama3.2:3b")
+MODEL: str = os.getenv("SLLM_MODEL", "ollama://llama3.2/llama3.2:3b")
 RUNTIME: str = os.getenv("SLLM_RAMALAMA", "")
 NAME: str = "sllm"
 SHUTDOWN_NAME: str = "sllm-shutdown"
