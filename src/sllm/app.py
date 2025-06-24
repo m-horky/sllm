@@ -14,15 +14,33 @@ logger = logging.getLogger(__name__)
 
 
 def _status_runtime() -> None:
-    cmd = ["podman", "image", "ls", "--format", "json"]
-    proc = subprocess.run(cmd, text=True, capture_output=True)
+    # Get the ramalama image name
+    info_cmd = ["ramalama", "info"]
+    info_proc = subprocess.run(info_cmd, text=True, capture_output=True)
+    if info_proc.returncode > 0:
+        logger.error(f"Cannot query ramalama info: {info_proc.stderr.strip()}")
+        return
+
+    try:
+        info_data: dict = json.loads(info_proc.stdout)
+        ramalama_image = info_data.get("Image")
+        if not ramalama_image:
+            logger.info("Runtime is not present.")
+            return
+    except json.JSONDecodeError as e:
+        logger.error(f"Cannot parse ramalama info JSON: {e}")
+        return
+
+    # Check if this image is present in podman
+    query_cmd = ["podman", "image", "ls", "--format", "json"]
+    proc = subprocess.run(query_cmd, text=True, capture_output=True)
     if proc.returncode > 0:
         logger.error(f"Cannot query for runtime: {proc.stderr.strip()}")
         return
 
     images: list[dict] = json.loads(proc.stdout)
     for image in images:
-        if "quay.io/ramalama/ramalama:latest" in image.get("Names", []):
+        if ramalama_image in image.get("Names", []):
             break
     else:
         logger.info("Runtime is not present.")
