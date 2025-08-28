@@ -80,18 +80,21 @@ To use this automatically for every commit in your repository:
 
 ```shell
 $ sllm-translate --help
-usage: sllm-translate [-h] [--pipe | --edit | --file FILE] [--debug]
+usage: sllm-translate [-h] [--debug] [--pipe | --edit | --file FILE] [argv ...]
+
+positional arguments:
+  argv         read from argv
 
 options:
   -h, --help   show this help message and exit
-  --pipe       read from pipe (default)
+  --debug      nerd information
+  --pipe       read from pipe
   --edit       open editor
   --file FILE  read from file
-  --debug      nerd information
 ```
 
 ```shell
-$ echo 'Potřebuji poradit jak povolit program v SELinuxu' | sllm-translate
+$ sllm-translate Potřebuji poradit jak povolit program v SELinuxu
 | Potřebuji poradit jak povolit program v SELinuxu
 INFO Translating...
 I need advice on how to enable the program in SELinux

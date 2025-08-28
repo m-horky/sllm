@@ -57,13 +57,12 @@ def communicate_request(message: str) -> None:
 
 def app() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--debug", action="store_true", help="nerd information")
     flags = parser.add_mutually_exclusive_group()
-    flags.add_argument(
-        "--pipe", action="store_true", help="read from pipe (default)"
-    )
+    flags.add_argument("--pipe", action="store_true", help="read from pipe")
     flags.add_argument("--edit", action="store_true", help="open editor")
     flags.add_argument("--file", type=pathlib.Path, help="read from file")
-    parser.add_argument("--debug", action="store_true", help="nerd information")
+    parser.add_argument("argv", nargs="*", help="read from argv")
 
     args = parser.parse_args()
 
@@ -74,6 +73,8 @@ def app() -> None:
         message = read_from_editor()
     elif args.file:
         message = read_from_file(args.file)
+    elif len(args.argv):
+        message = " ".join(args.argv)
     else:
         parser.print_help()
         return
