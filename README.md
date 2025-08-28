@@ -80,17 +80,9 @@ To use this automatically for every commit in your repository:
 
 ```shell
 $ sllm-translate --help
-usage: sllm-translate [-h] [--debug] [--pipe | --edit | --file FILE] [argv ...]
+usage: sllm-translate [-h] [--debug] [input ...]
 
-positional arguments:
-  argv         read from argv
-
-options:
-  -h, --help   show this help message and exit
-  --debug      nerd information
-  --pipe       read from pipe
-  --edit       open editor
-  --file FILE  read from file
+Translate text into English. Leaving the input empty will open $EDITOR window.
 ```
 
 ```shell

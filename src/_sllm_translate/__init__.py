@@ -5,7 +5,6 @@ import textwrap
 import os
 import importlib.resources
 import argparse
-import pathlib
 import traceback
 import logging
 
@@ -14,19 +13,6 @@ import sllm.common
 import sllm.container
 
 logger = logging.getLogger(__name__)
-
-
-def is_input_piped() -> bool:
-    return not os.isatty(sys.stdin.fileno())
-
-
-def read_from_pipe() -> str:
-    return sys.stdin.read()
-
-
-def read_from_file(file: pathlib.Path) -> str:
-    with file.open("r") as handle:
-        return handle.read()
 
 
 def read_from_editor() -> str:
@@ -56,28 +42,22 @@ def communicate_request(message: str) -> None:
 
 
 def app() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description=(
+            "Translate text into English. "
+            "Leaving the input empty will open $EDITOR window."
+        )
+    )
     parser.add_argument("--debug", action="store_true", help="nerd information")
-    flags = parser.add_mutually_exclusive_group()
-    flags.add_argument("--pipe", action="store_true", help="read from pipe")
-    flags.add_argument("--edit", action="store_true", help="open editor")
-    flags.add_argument("--file", type=pathlib.Path, help="read from file")
-    parser.add_argument("argv", nargs="*", help="read from argv")
+    parser.add_argument("input", nargs="*", help="read from argv")
 
     args = parser.parse_args()
 
     message: str = ""
-    if args.pipe or is_input_piped():
-        message = read_from_pipe()
-    elif args.edit:
-        message = read_from_editor()
-    elif args.file:
-        message = read_from_file(args.file)
-    elif len(args.argv):
+    if len(args.input):
         message = " ".join(args.argv)
     else:
-        parser.print_help()
-        return
+        message = read_from_editor()
 
     sllm.container.ensure_runtime()
     sllm.container.ensure_started()
