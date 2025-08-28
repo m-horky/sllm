@@ -21,8 +21,9 @@ def ok() -> bool:
 
     try:
         req: requests.Response = requests.post(
-            f"{sllm.common.API_URL}/v1/chat/completions",
+            f"{sllm.common.API_URL}/api/chat",
             json={
+                "model": sllm.common.MODEL,
                 "temperature": 0.0,
                 "stream": False,
                 "messages": [
@@ -39,7 +40,7 @@ def ok() -> bool:
         return False
 
     response: dict = req.json()
-    pong: str = response["choices"][0]["message"]["content"].strip()
+    pong: str = response["message"]["content"].strip()
     if pong != "pong":
         logger.error(
             f"Model didn't respond properly: wanted 'pong', got '{pong}'."
@@ -82,6 +83,7 @@ class Request:
 
     def _build(self) -> dict:
         return {
+            "model": sllm.common.MODEL,
             "temperature": self.temperature,
             "stream": False,
             "messages": [
@@ -97,7 +99,7 @@ class Request:
             ],
         }
 
-    def send(self, *, timeout: int = 120) -> dict:
+    def send(self, *, timeout: int = 120) -> str:
         """Request an answer from the LLM.
 
         Expects ramalama to be serving OpenAPI-compatible API on
@@ -117,7 +119,7 @@ class Request:
 
         try:
             req: requests.Response = requests.post(
-                f"{sllm.common.API_URL}/v1/chat/completions",
+                f"{sllm.common.API_URL}/api/chat",
                 json=self._build(),
                 # connection timeout can be very low, we're on localhost
                 timeout=(0.5, timeout),
@@ -127,20 +129,5 @@ class Request:
             raise TimeoutError("Model didn't respond on time.")
 
         response: dict = req.json()
-
-        logger.debug(
-            "Spent {delta:.2f} seconds on prompt ({size} tokens).".format(
-                delta=response["timings"]["prompt_ms"] / 1000,
-                size=response["usage"]["prompt_tokens"],
-            )
-        )
-        logger.debug(
-            "Spend {delta:.2f} seconds on inference ({speed:.2f} tokens/second).".format(
-                delta=response["timings"]["predicted_ms"] / 1000,
-                speed=response["timings"]["predicted_per_second"],
-            )
-        )
-
-        return response
-
-    # TODO Streaming via iterators
+        content: str = response["message"]["content"].strip()
+        return content

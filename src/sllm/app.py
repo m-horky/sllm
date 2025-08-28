@@ -6,6 +6,8 @@ import sys
 import logging
 import traceback
 
+import requests
+
 import sllm.common
 import sllm.container
 
@@ -14,23 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 def _status_runtime() -> None:
-    # Get the ramalama image name
-    info_cmd = ["ramalama", "info"]
-    info_proc = subprocess.run(info_cmd, text=True, capture_output=True)
-    if info_proc.returncode > 0:
-        logger.error(f"Cannot query ramalama info: {info_proc.stderr.strip()}")
-        return
-
-    try:
-        info_data: dict = json.loads(info_proc.stdout)
-        ramalama_image = info_data.get("Image")
-        if not ramalama_image:
-            logger.info("Runtime is not present.")
-            return
-    except json.JSONDecodeError as e:
-        logger.error(f"Cannot parse ramalama info JSON: {e}")
-        return
-
     # Check if this image is present in podman
     query_cmd = ["podman", "image", "ls", "--format", "json"]
     proc = subprocess.run(query_cmd, text=True, capture_output=True)
@@ -40,7 +25,7 @@ def _status_runtime() -> None:
 
     images: list[dict] = json.loads(proc.stdout)
     for image in images:
-        if ramalama_image in image.get("Names", []):
+        if sllm.container.IMAGE in image.get("Names", []):
             break
     else:
         logger.info("Runtime is not present.")
@@ -54,43 +39,51 @@ def _status_runtime() -> None:
 
 
 def _status_model() -> None:
-    cmd = ["ramalama", "ls", "--json"]
-    proc = subprocess.run(cmd, text=True, capture_output=True)
-    if proc.returncode > 0:
-        logger.error(f"Cannot query for models: {proc.stderr.strip()}")
+    try:
+        resp = requests.get(f"{sllm.common.API_URL}/api/tags")
+    except Exception as exc:
+        logger.info("HTTP API is not running, models not accessible.")
+        logger.debug(f"HTTP API is not running: {exc}.")
         return
 
-    models: list[dict] = json.loads(proc.stdout)
-    for model in models:
-        if sllm.container.MODEL in model["name"]:
+    if not resp.ok:
+        logger.info("HTTP API is not running, models not accessible.")
+        logger.debug(f"HTTP API is not well: {resp}.")
+        return
+
+    for model in resp.json().get("models"):
+        if sllm.common.MODEL in model["name"]:
             break
     else:
         logger.info("Model is not present.")
         return
 
     logger.info(
-        "Model is present ({size:.2f} GB).".format(
+        "Model is present ({quant}, {size:.2f} GB).".format(
+            quant=model["details"]["quantization_level"],
             size=model["size"] / 2**30,
         )
     )
 
 
 def _status_api() -> None:
-    cmd = ["ramalama", "ps", "--format", "json"]
-    proc = subprocess.run(cmd, text=True, capture_output=True)
-    if proc.returncode > 0:
-        logger.error(f"Cannot query for API: {proc.stderr.strip()}")
+    try:
+        resp = requests.get(f"{sllm.common.API_URL}/api/version")
+    except Exception as exc:
+        logger.info("HTTP API is not running.")
+        logger.debug(f"HTTP API is not running: {exc}.")
         return
 
-    models: list[dict] = json.loads(proc.stdout)
-    for model in models:
-        if sllm.container.MODEL in model["Labels"]["ai.ramalama.model"]:
-            break
-    else:
-        logger.info("API is not running.")
+    if not resp.ok:
+        logger.info("HTTP API is not running.")
+        logger.debug(f"HTTP API is not well: {resp}.")
         return
 
-    logger.info(f"API is present (http://127.0.0.1:{sllm.common.API_PORT}).")
+    version: str = resp.json().get("version", "unknown")
+    logger.info(
+        f"API is present (http://127.0.0.1:{sllm.common.API_PORT}, "
+        f"version {version})."
+    )
 
 
 def _status_shutdown() -> None:
@@ -118,8 +111,8 @@ def _status_shutdown() -> None:
 
 def status() -> None:
     _status_runtime()
-    _status_model()
     _status_api()
+    _status_model()
     _status_shutdown()
 
 

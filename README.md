@@ -6,7 +6,7 @@ My repository for managing small large language models. Yep.
 
 ## Installation
 
-Dependencies: `systemd`, `podman`, `ramalama`.
+Dependencies: `systemd`, `podman`.
 
 ```shell
 $ pipx install git+https://github.com/m-horky/sllm.git
@@ -37,10 +37,10 @@ $ sllm --init
 
 ```shell
 $ sllm --status
-INFO Runtime is present (1.03 GB).
-INFO Model is present (1.88 GB).
-INFO API is present (http://127.0.0.1:6574).
-INFO Container shutdown is scheduled (2025-04-08 12:41:24).
+INFO Runtime is present (2.11 GB).
+INFO API is present (http://127.0.0.1:6574, version 0.11.7).
+INFO Model is present (Q4_K_M, 1.88 GB).
+INFO Container shutdown is scheduled (2025-08-28 09:59:33).
 ```
 
 By default, the model shuts itself down after 15 minutes to save resources. You can manage this interval by seting `SLLM_SHUTDOWN_INTERVAL` to systemd-compatible value.
@@ -50,7 +50,7 @@ By default, the model shuts itself down after 15 minutes to save resources. You 
 Dependencies: `git`.
 
 ```shell
-$ sllm-git-message --help 
+$ sllm-git-message --help
 usage: sllm-git-message [-h] [--ref REF | --file FILE] [--debug]
 
 options:
@@ -101,8 +101,8 @@ I need advice on how to enable the program in SELinux
 
 Configuration is done through environment variables. Set them in your `.profile`.
 
-- `SLLM_MODEL`: LLM to use. Defaults to `ollama://llama3.2:3b`.
-- `SLLM_RAMALAMA`: ramalama [image](https://quay.io/repository/ramalama/ramalama?tab=tags&tag=latest) to use.
+- `SLLM_OLLAMA`: ollama image to use. Defaults to `docker.io/ollama/ollama:latest`.
+- `SLLM_MODEL`: LLM to use. Defaults to `llama3.2:3b`.
 - `SLLM_SHUTDOWN_INTERVAL`: Timeout after which ramalama should shut down itself.
 
 ## Why

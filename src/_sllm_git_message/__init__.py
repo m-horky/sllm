@@ -113,9 +113,8 @@ def app() -> None:
         example_input_header="[Instruction]",
         example_response_header="[Review]",
     )
-    response: dict = request.send()
+    review: str = request.send()
 
-    review: str = response["choices"][0]["message"]["content"].strip()
     ok: bool = communicate_response(review)
     if not ok:
         logger.warning("You should use '--amend' to rewrite the message.")

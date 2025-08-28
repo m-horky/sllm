@@ -9,8 +9,7 @@ import requests
 import sllm.common
 
 
-MODEL: str = os.getenv("SLLM_MODEL", "ollama://llama3.2/llama3.2:3b")
-RUNTIME: str = os.getenv("SLLM_RAMALAMA", "")
+IMAGE: str = os.getenv("SLLM_OLLAMA", "docker.io/ollama/ollama:latest")
 NAME: str = "sllm"
 SHUTDOWN_NAME: str = "sllm-shutdown"
 SHUTDOWN_INTERVAL: str = os.getenv("SLLM_SHUTDOWN_INTERVAL", "15m")
@@ -19,21 +18,30 @@ logger = logging.getLogger(__name__)
 
 
 def ensure_runtime() -> None:
-    """Download the ramalama runtime and the model.
+    """Download the ollama container.
 
-    :raises RuntimeError: 'ramalama pull' failed.
+    :raises RuntimeError: 'podman pull' failed.
     """
-    logger.debug(f"Downloading '{MODEL}'.")
+    logger.debug(f"Downloading '{IMAGE}'.")
+    cmd_ollama = ["podman", "pull", IMAGE]
+    proc_ollama = subprocess.run(cmd_ollama, text=True, capture_output=True)
+    if proc_ollama.returncode > 0:
+        logger.critical(f"'podman pull' returned {proc_ollama.returncode}.")
+        raise RuntimeError(f"Couldn't pull '{IMAGE}'.")
 
-    cmd = ["ramalama"]
-    if RUNTIME:
-        logger.debug(f"Using custom ramalama image {RUNTIME}.")
-        cmd += ["--image", RUNTIME]
-    cmd += ["pull", MODEL]
-    proc = subprocess.run(cmd, text=True, capture_output=False)
+    if not started():
+        start()
+        wait_for_start()
+        schedule_shutdown()
+
+    logger.debug(f"Downloading '{sllm.common.MODEL}'.")
+
+    cmd_model = ["podman", "exec", "-it", NAME]
+    cmd_model += ["ollama", "pull", sllm.common.MODEL]
+    proc = subprocess.run(cmd_model, text=True, capture_output=True)
     if proc.returncode > 0:
-        logger.critical(f"'ramalama pull' returned {proc.returncode}.")
-        raise RuntimeError(f"Couldn't pull model '{MODEL}'.")
+        logger.critical(f"'ollama pull' returned {proc.returncode}.")
+        raise RuntimeError(f"Couldn't pull model '{sllm.common.MODEL}'.")
     logger.debug("Downloaded.")
 
 
@@ -77,16 +85,16 @@ def started() -> bool:
         return False
 
     try:
-        resp = requests.get(f"{sllm.common.API_URL}/health")
+        resp = requests.get(f"{sllm.common.API_URL}/")
     except Exception as exc:
         logger.debug(f"HTTP API is not running: {exc}.")
         return False
 
     if not resp.ok:
-        logger.debug("Model is not running.")
+        logger.debug("HTTP API is not well.")
         return False
 
-    logger.debug("Container, ramalama and model are running.")
+    logger.debug("Runtime is running.")
     return True
 
 
@@ -95,25 +103,34 @@ def start() -> None:
 
     :raises RuntimeError:
     """
-    cmd = ["ramalama"]
-    if RUNTIME:
-        cmd += ["--image", RUNTIME]
-    cmd += ["serve"]
-    # Decrease context size
-    cmd += ["--ctx-size", "2048"]
-    # Do not download if not necessary
-    cmd += ["--pull", "missing"]
-    # Configure
-    cmd += ["--port", str(sllm.common.API_PORT)]
-    cmd += ["--name", NAME]
+    cmd = ["podman", "run"]
+    # cmd += ["--gpus", "all"]  # This errors out without Nvidia GPU
     cmd += ["--detach"]
-    cmd += [MODEL]
+    cmd += ["--rm"]
+    cmd += ["--volume", "ollama:/root/.ollama"]
+    cmd += ["--publish", f"{str(sllm.common.API_PORT)}:11434"]
+    cmd += ["--name", NAME]
+    cmd += [IMAGE]
 
     logger.info("Starting the container.")
     proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode > 0:
         logger.debug(f"Command {cmd} failed: {proc.stderr.strip()}")
         raise RuntimeError("Server could not be started.")
+
+
+def wait_for_start() -> None:
+    """Wait for the server to start.
+
+    :raises TimeoutError: Server didn't start on time.
+    """
+    for _ in range(10):
+        time.sleep(0.5)
+        if started():
+            logger.debug("Server is now running.")
+            return
+
+    raise TimeoutError
 
 
 def _cancel_scheduled_shutdown() -> None:

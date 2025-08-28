@@ -95,9 +95,7 @@ def app() -> None:
         example_input_header="[Original]",
         example_response_header="[Translation]",
     )
-    response: dict = request.send()
-
-    translation: str = response["choices"][0]["message"]["content"].strip()
+    translation: str = request.send()
     print(translation)
 
 
