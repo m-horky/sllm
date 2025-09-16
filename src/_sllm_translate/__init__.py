@@ -55,7 +55,7 @@ def app() -> None:
 
     message: str = ""
     if len(args.input):
-        message = " ".join(args.argv)
+        message = " ".join(args.input)
     else:
         message = read_from_editor()
 
