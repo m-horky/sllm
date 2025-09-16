@@ -22,6 +22,7 @@ def ensure_runtime() -> None:
 
     :raises RuntimeError: 'podman pull' failed.
     """
+    logger.info("Updating runtime.")
     logger.debug(f"Downloading '{IMAGE}'.")
     cmd_ollama = ["podman", "pull", IMAGE]
     proc_ollama = subprocess.run(cmd_ollama, text=True, capture_output=True)
