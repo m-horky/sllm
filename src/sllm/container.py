@@ -47,7 +47,7 @@ def ensure_runtime() -> None:
 
 
 def ensure_started() -> None:
-    """Start the ramalama server.
+    """Start the ollama server.
 
     Does nothing if the server is already running.
 
@@ -68,9 +68,9 @@ def ensure_started() -> None:
 
 
 def started() -> bool:
-    """Query the ramalama server for status.
+    """Query the ollama server for status.
 
-    :returns: True if ramalama is ready to serve requests.
+    :returns: True if ollama is ready to serve requests.
     """
     cmd = ["podman", "inspect", NAME]
     proc = subprocess.run(cmd, text=True, capture_output=True)
@@ -100,7 +100,7 @@ def started() -> bool:
 
 
 def start() -> None:
-    """Start the ramalama server.
+    """Start the ollama server in a podman container.
 
     :raises RuntimeError:
     """

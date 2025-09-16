@@ -98,7 +98,7 @@ Configuration is done through environment variables. Set them in your `.profile`
 
 - `SLLM_OLLAMA`: ollama image to use. Defaults to `docker.io/ollama/ollama:latest`.
 - `SLLM_MODEL`: LLM to use. Defaults to `llama3.2:3b`.
-- `SLLM_SHUTDOWN_INTERVAL`: Timeout after which ramalama should shut down itself.
+- `SLLM_SHUTDOWN_INTERVAL`: Timeout after which ollama server should shut down itself.
 
 ## Why
 

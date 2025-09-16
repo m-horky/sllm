@@ -102,8 +102,8 @@ class Request:
     def send(self, *, timeout: int = 120) -> str:
         """Request an answer from the LLM.
 
-        Expects ramalama to be serving OpenAPI-compatible API on
-        localhost on a well-known port.
+        Expects ollama to be serving its own API on localhost on a well-known
+        port.
 
         :param timeout: REST call timeout, in seconds.
         :raises TimeoutError: Model works fine, but response timed out.
@@ -114,7 +114,8 @@ class Request:
         if not ok():
             raise RuntimeError(
                 "Model is malfunctioning. "
-                "Run again with '--debug', or execute 'ramalama' yourself to investigate."
+                "Run again with '--debug', "
+                "or run the ollama container yourself to investigate."
             )
 
         try:
